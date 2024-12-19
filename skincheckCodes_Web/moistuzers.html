@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moisturizers</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .product-button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .product-button:hover {
+            transform: scale(1.1);
+        }
+
+        .product-button img {
+            width: 150px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-info {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: -16px;
+            right: -16px;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .product-button:hover .product-info {
+            display: flex;
+            opacity: 1;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js"></script>
+</head>
+
+</head>
+
+
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <select id="language-select">
+            <option value="en">English</option>
+            <option value="tr">Türkçe</option>
+        </select>
+        <button id="toggle-dark-mode" class="btn" style="width: auto; padding: 5px 10px;">🌓</button>
+    </div>
+
+    <div class="brand">
+        <div class="logo">
+            <img src="assets/logo.png" alt="Skin Check Logo">
+        </div>
+        <a href="home.html">
+            <h1>SkinCheck</h1>
+        </a>
+    </div>
+
+    <div class="container">
+        <div class="main-content">Moisturizer</div>
+        <div class="products">
+            <button class="product-button"
+                onclick="window.open('https://creamco.com.tr/moisturizer?srsltid=AfmBOoqXz933dJk4FSkO5-OxkhIwODilfNQ5MOWbdJGX44xpszfdN9XY', '_blank')">
+                <img src="assets/cream_co_nemlendirici.jpg" alt="Cream Co Nemlendirici">
+                <div class="product-info">391,00 TL &nbsp;<span>&#9733; 4.7</span></div>
+            </button>
+            <button class="product-button"
+                onclick="window.open('https://www.cerave.com.tr/cilt-bakimi/nemlendirici-krem', '_blank')">
+                <img src="assets/cerave_nemlendirici.jpg" alt="CeraVe Nemlendirici">
+                <div class="product-info">649,00 TL &nbsp;<span>&#9733; 4.6</span></div>
+            </button>
+            <button class="product-button"
+                onclick="window.open('https://biolea.com.tr/derinlemesine-nemlendirici-yuz-bakim-kremi-50-ml', '_blank')">
+                <img src="assets/bioleas_nemlendirici.jpg" alt="Bioleas Nemlendirici">
+                <div class="product-info">199,00 TL &nbsp;<span>&#9733; 4.9</span></div>
+            </button>
+            <button class="product-button"
+                onclick="window.open('https://www.loccitane.com.tr/shea-butter-ultra-rich-comforting-cream-shea-yogun-nemlendirici-yuz-kremi-01cv050k22/', '_blank')">
+                <img src="assets/loccitane_nemlendirici.jpg" alt="L'Occitane Nemlendirici">
+                <div class="product-info">1.540,00 TL &nbsp;<span>&#9733; 5.0</span></div>
+            </button>
+            <button class="product-button"
+                onclick="window.open('https://www.mesoance.com/pink-cloud-ya%C5%9Flanma-kar%C5%9F%C4%B1t%C4%B1-nemlendirici-y%C3%BCz-bak%C4%B1m-kremi-50ml?srsltid=AfmBOorvf0qpNbJ2HfN23lEwggFAzCVxTV9iZvUlFNlVrWH-AfJDC3GG', '_blank')">
+                <img src="assets/mesoance_nemlendirici.jpg" alt="Mesoance Nemlendirici">
+                <div class="product-info">359,00 TL &nbsp;<span>&#9733; 4.7</span></div>
+            </button>
+            <button class="product-button"
+                onclick="window.open('https://www.trendyol.com/neutrogena/norvec-formulu-yogun-bakim-kremi-200-ml-p-1068957', '_blank')">
+                <img src="assets/neutrogena_nemlendiici.jpg" alt="Neutrogena Nemlendirici">
+                <div class="product-info">88,92 TL &nbsp;<span>&#9733; 4.6</span></div>
+            </button>
+            <button class="product-button"
+                onclick="window.open('https://www.trendyol.com/nivea/soft-nemlendirici-bakim-kremi-300ml-jojoba-yagi-e-vitamini-hizli-emilir-el-yuz-vucut-icin-p-1068344', '_blank')">
+                <img src="assets/nivea_nemlendirici.jpg" alt="Nivea Nemlendirici">
+                <div class="product-info">124,90 TL &nbsp;<span>&#9733; 4.6</span></div>
+            </button>
+            <button class="product-button"
+                onclick="window.open('https://www.ekoorganik.com/kategori/bakim_kozmetik/yuz_bakimi/urtekram-organik-nemlendirici-gece-kremi-50.aspx', '_blank')">
+                <img src="assets/urtekram_nemlendirici.jpg" alt="Urtekram Nemlendirici">
+                <div class="product-info">750,00 TL &nbsp;<span>&#9733; 4.0</span></div>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCSoYhwQHqT5LVzeDjcuTqi5xtAOH13bkM",
+            authDomain: "skincheck-435a9.firebaseapp.com",
+            projectId: "skincheck-435a9",
+            storageBucket: "skincheck-435a9.firebasestorage.app",
+            messagingSenderId: "939869338366",
+            appId: "1:939869338366:web:2d2f7e1c809f5742c283af",
+            measurementId: "G-TK8CSQ0P9D"
+        };
+
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Language Selection
+        const languageSelect = document.getElementById('language-select');
+        const mainContent = document.querySelector('.main-content');
+
+        const translations = {
+            en: {
+                welcomeMessage: "Moistuzers",
+            },
+            tr: {
+                welcomeMessage: "Nemlendiriciler",
+            }
+        };
+
+        languageSelect.addEventListener('change', () => {
+            const selectedLanguage = languageSelect.value;
+            mainContent.innerText = translations[selectedLanguage].welcomeMessage;
+        });
+
+        const defaultLanguage = "en";
+        mainContent.innerText = translations[defaultLanguage].welcomeMessage;
+
+        // Toggle Dark Mode
+        document.getElementById('toggle-dark-mode').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+    </script>
+</body>

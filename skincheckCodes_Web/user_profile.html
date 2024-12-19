@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-storage-compat.js"></script>
+    <style>
+        .analysis-complete {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .analysis-complete p {
+            margin: 10px 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .photo-gallery {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .photo-gallery h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .photo-gallery img {
+            width: 150px;
+            height: 150px;
+            margin: 10px;
+            object-fit: cover;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .photo-gallery img:hover {
+            border-color: #0066cc;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js"></script>
+</head>
+
+<body>
+    <div class="top-bar">
+        <select id="language-select">
+            <option value="en">English</option>
+            <option value="tr">Türkçe</option>
+        </select>
+        <button id="toggle-dark-mode" class="btn" style="width: auto; padding: 5px 10px;">🌓</button>
+    </div>
+    <div class="brand">
+        <div class="logo">
+            <img src="assets/logo.png" alt="Skin Check Logo">
+        </div>
+        <a href="home.html">
+            <h1>SkinCheck</h1>
+        </a>
+    </div>
+    <div class="container">
+        <h2 id="profile-title">User Profile</h2>
+        <p id="profile-text">Manage your account and preferences here.</p>
+
+        <button id="customization-btn" class="btn">Customize Profile</button>
+        <button id="notifications-btn" class="btn">Notifications</button>
+        <button id="sign-out-btn" class="btn">Sign Out</button>
+
+        <div class="photo-gallery" id="photo-gallery">
+            <h3>Uploaded Photos</h3>
+            <div id="photo-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCSoYhwQHqT5LVzeDjcuTqi5xtAOH13bkM",
+            authDomain: "skincheck-435a9.firebaseapp.com",
+            projectId: "skincheck-435a9",
+            storageBucket: "skincheck-435a9.firebasestorage.app",
+            messagingSenderId: "939869338366",
+            appId: "1:939869338366:web:2d2f7e1c809f5742c283af",
+            measurementId: "G-TK8CSQ0P9D"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+
+        // Language Selection
+        const languageSelect = document.getElementById('language-select');
+        const profileTitle = document.getElementById('profile-title');
+        const profileText = document.getElementById('profile-text');
+        const customizeBtn = document.getElementById('customization-btn');
+        const notificationsBtn = document.getElementById('notifications-btn');
+        const signOutButton = document.getElementById('sign-out-btn');
+
+        languageSelect.addEventListener('change', () => {
+            const selectedLanguage = languageSelect.value;
+            if (selectedLanguage === 'en') {
+                profileTitle.innerText = "User Profile";
+                profileText.innerText = "Manage your account and preferences here.";
+                customizeBtn.innerText = "Customize Profile";
+                notificationsBtn.innerText = "Notifications";
+                signOutButton.innerText = "Sign Out";
+            } else if (selectedLanguage === 'tr') {
+                profileTitle.innerText = "Kullanıcı Profili";
+                profileText.innerText = "Hesabınızı ve tercihlerinizi buradan yönetin.";
+                customizeBtn.innerText = "Profili Özelleştir";
+                notificationsBtn.innerText = "Bildirimler";
+                signOutButton.innerText = "Çıkış Yap";
+            }
+        });
+
+        // Toggle Dark Mode
+        document.getElementById('toggle-dark-mode').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        customizeBtn.addEventListener('click', () => {
+            window.location.href = "profile_set.html";
+        });
+
+        notificationsBtn.addEventListener('click', () => {
+            window.location.href = "notifications.html";
+        });
+
+        // Sign Out
+        document.getElementById('sign-out-btn').addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                alert("You have been signed out.");
+                window.location.href = "index.html";
+            } catch (error) {
+                console.error("Error signing out:", error.message);
+
+            }
+        });
+
+        // Load and display photos from Firebase Storage
+        function loadUploadedPhotos() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Please log in to view your photos.");
+                return;
+            }
+
+            const userID = user.uid;
+            const storageRef = storage.ref();
+
+            // Get the user's photo folder in Firebase Storage
+            const userPhotosRef = storageRef.child(`photos/${userID}`);
+
+            // List all files in the user's photo folder
+            userPhotosRef.listAll().then((result) => {
+                const galleryContainer = document.getElementById("photo-container");
+                galleryContainer.innerHTML = ""; // Clear previous photos
+
+                if (result.items.length === 0) {
+                    galleryContainer.innerHTML = "<p>No photos uploaded yet.</p>";
+                } else {
+                    result.items.forEach((photoRef) => {
+                        // Get the download URL of each photo
+                        photoRef.getDownloadURL().then((url) => {
+                            const imgElement = document.createElement("img");
+                            imgElement.src = url;
+                            galleryContainer.appendChild(imgElement);
+                        }).catch((error) => {
+                            console.error("Error getting photo URL:", error);
+                        });
+                    });
+                }
+            }).catch((error) => {
+                console.error("Error listing photos:", error);
+            });
+        }
+
+        // Load photos when page is loaded
+        document.addEventListener("DOMContentLoaded", loadUploadedPhotos);
+    </script>
+</body>
+
+</html>

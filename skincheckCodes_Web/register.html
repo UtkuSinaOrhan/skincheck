@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Check - Register</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Register</h2>
+        <input type="text" id="first-name" placeholder="First Name">
+        <input type="text" id="last-name" placeholder="Last Name">
+        <input type="email" id="register-email" placeholder="Email">
+        <input type="password" id="register-password" placeholder="Password">
+        <button id="create-account" class="btn">Create Account</button>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase.js';
+        import { createUserWithEmailAndPassword } from "firebase/auth";
+        import { setDoc, doc, serverTimestamp } from "firebase/firestore";
+
+        document.getElementById('create-account').addEventListener('click', async () => {
+            const firstName = document.getElementById('first-name').value.trim();
+            const lastName = document.getElementById('last-name').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+
+            if (!firstName || !lastName || !email || !password) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await setDoc(doc(db, "users", user.uid), {
+                    firstName,
+                    lastName,
+                    email,
+                    createdAt: serverTimestamp()
+                });
+
+                alert("Account created successfully.");
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Check - Home</title>
+    <style>
+        .footer {
+            margin-top: 15px;
+            color: #808080;
+            background-color: #2f0057;
+            font-size: 12px;
+        }
+
+        .motto {
+            color: #aaa;
+            font-family: monospace;
+            font-size: 16px;
+        }
+
+        .logos {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .logos img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+    </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Top Bar for Language and Dark Mode -->
+    <div class="top-bar">
+        <select id="language-select">
+            <option value="en">English</option>
+            <option value="tr">Türkçe</option>
+        </select>
+        <button id="toggle-dark-mode" class="btn" style="width: auto; padding: 5px 10px;">🌓</button>
+    </div>
+
+    <div class="container">
+        <div class="logo">
+            <img src="assets/logo.png" alt="Skin Check Logo">
+        </div>
+        <h2 id="welcome-message">Welcome to Skin Check</h2>
+        <button id="create-account" class="btn">Create Account</button>
+        <button id="google-signin" class="btn">
+            <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google Logo">
+            Sign in with Google
+        </button>
+        <div class="footer">&copy; 2024 Skin Check</div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBgZm1wg0J2eIQ7q8HamLQFmO_eksScOvc",
+            authDomain: "skincheck-e6485.firebaseapp.com",
+            projectId: "skincheck-e6485",
+            storageBucket: "skincheck-e6485.firebasestorage.app",
+            messagingSenderId: "736789906802",
+            appId: "1:736789906802:web:4dba7fd5000287932089eb",
+            measurementId: "G-WZ2KMPXML5"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Language Selection
+        const languageSelect = document.getElementById('language-select');
+        const welcomeMessage = document.getElementById('welcome-message');
+
+        languageSelect.addEventListener('change', () => {
+            const selectedLanguage = languageSelect.value;
+            if (selectedLanguage === 'en') {
+                welcomeMessage.innerText = "Welcome to Skin Check";
+                document.getElementById('create-account').innerText = "Create Account";
+                document.getElementById('google-signin').innerText = "Sign in with Google";
+            } else if (selectedLanguage === 'tr') {
+                welcomeMessage.innerText = "Skin Check'e Hoş Geldiniz";
+                document.getElementById('create-account').innerText = "Hesap Oluştur";
+                document.getElementById('google-signin').innerText = "Google ile Giriş Yap";
+            }
+        });
+
+        // Toggle Dark Mode
+        document.getElementById('toggle-dark-mode').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        // Redirect to Register Page
+        document.getElementById('create-account').addEventListener('click', () => {
+            // Redirect to the registration page
+            window.location.href = "register.html";
+        });
+
+        // Check Auth State
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log("User signed in:", user.email);
+                window.location.href = "home.html";
+            }
+        });
+
+        // Google Sign-In
+        document.getElementById('google-signin').addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: 'select_account' });
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                console.log("Signed in user:", user);
+                window.location.href = "home.html";
+            } catch (error) {
+                if (error.code === 'auth/popup-closed-by-user') {
+                    alert("Sign-in cancelled. Please try again.");
+                } else {
+                    alert(`Error: ${error.message}`);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

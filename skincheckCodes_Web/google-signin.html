@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Check - Google Sign In</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Sign in with Google</h2>
+        <button id="google-signin-btn" class="btn">
+            <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google Logo">
+            Sign in with Google
+        </button>
+        <div class="error-message" id="error-message"></div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase.js';
+        import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+
+        const provider = new GoogleAuthProvider();
+
+        document.getElementById('google-signin-btn').addEventListener('click', async () => {
+            try {
+                const button = document.getElementById('google-signin-btn');
+                button.innerText = "Signing in...";
+                button.disabled = true;
+
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+
+                const userDoc = db.collection('users').doc(user.uid);
+                const doc = await userDoc.get();
+
+                if (!doc.exists) {
+                    await userDoc.set({
+                        firstName: user.displayName?.split(" ")[0] || "GoogleUser",
+                        lastName: user.displayName?.split(" ")[1] || "",
+                        email: user.email,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
+                alert(`Welcome, ${user.displayName}`);
+                window.location.href = "dashboard.html";
+            } catch (error) {
+                document.getElementById('error-message').innerText = `Error: ${error.message}`;
+            } finally {
+                const button = document.getElementById('google-signin-btn');
+                button.innerText = "Sign in with Google";
+                button.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

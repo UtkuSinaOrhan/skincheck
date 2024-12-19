@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Check - Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Welcome to Skin Check</h1>
+        <button id="sign-out-btn" class="btn">Sign Out</button>
+    </div>
+
+    <script type="module">
+        import { auth } from './firebase.js';
+        import { signOut, onAuthStateChanged } from "firebase/auth";
+
+        document.getElementById('sign-out-btn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                alert("Signed out successfully.");
+                window.location.href = "index.html";
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+</body>
+
+</html>
